@@ -5,6 +5,7 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 
+
 from matplotlib import pyplot as plt
 
 # to log, pass the string "log" as arg when running the file
@@ -62,6 +63,44 @@ def define_model():
     model.add(Dense(128, activation='relu'))
     model.add(Dense(10, activation='softmax'))
     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    return model
 
+def train_model(model, train_images, train_labels, label_mapping):
+    """
+    This function trains the model.
+    """
+    # train the model
+    model.fit(train_images, train_labels, epochs=10)
 
-define_model()
+    # evaluate the model
+    scores = model.evaluate(train_images, train_labels)
+    print(f"\n{model.metrics_names[1]}: {scores[1]*100}%")
+
+    # save the model
+    model.save('model.h5')
+
+def main():
+    """
+    This function is the main function.
+    """
+    # define the model
+    model = define_model()
+
+    # train the model
+    train_model(model, train_images_norm, labels.values, label_mapping)
+
+    quit()
+
+    # evaluate the model
+    scores = model.evaluate(train_images_norm, labels.values)
+    print(f"\n{model.metrics_names[1]}: {scores[1]*100}%")
+
+    # predict the test set
+    predictions = model.predict(test_images_norm)
+
+    # create the submission file
+    sample_submission.prediction = predictions.argmax(axis=1)
+    sample_submission.to_csv('submission.csv', index=False)
+
+if __name__ == "__main__":
+    main()
